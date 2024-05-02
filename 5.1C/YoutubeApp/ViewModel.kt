@@ -1,5 +1,6 @@
 package SOT305.a5_1c_2
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,6 +28,7 @@ class UserViewModel(private val userRepo: UserRepo) : ViewModel() {
     private fun getPlaylistByUserId(userId: Int) {
         viewModelScope.launch {
             userRepo.getPlaylistByUserIdAsFlow(userId).collect { playlist ->
+                Log.d("UserViewModel", "Playlist updated: $playlist")
                 _playlist.value = playlist
             }
         }

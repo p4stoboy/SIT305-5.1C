@@ -1,6 +1,7 @@
 package SOT305.a5_1c_2
 
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -31,7 +32,8 @@ fun getVideoIdFromUrl(youtubeUrl: String): String? {
 @Composable
 fun UserManagerApp(userRepo: UserRepo) {
     val navController = rememberNavController()
-    val userViewModel = UserViewModel(userRepo)
+    // preserve state across recompositions omg
+    val userViewModel = viewModel { UserViewModel(userRepo) }
 
     NavHost(navController = navController, startDestination = "login") {
         composable("login") {
@@ -81,10 +83,9 @@ fun UserManagerApp(userRepo: UserRepo) {
             arguments = listOf(navArgument("youtubeId") { type = NavType.StringType })
         ) { backStackEntry ->
             val youtubeId = backStackEntry.arguments?.getString("youtubeId") ?: ""
-            if (youtubeId.isEmpty()) {
-                navController.popBackStack()
+            if (youtubeId.isNotEmpty()) {
+                VideoPlaybackScreen(youtubeId, onBackButton = { navController.popBackStack() })
             }
-            VideoPlaybackScreen(youtubeId, onBackButton = { navController.popBackStack() })
         }
         composable("playlist") {
             PlaylistScreen(
